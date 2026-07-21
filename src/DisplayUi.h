@@ -2,12 +2,10 @@
 
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7789.h>
+#include <Config.h>
 
 class DisplayUi {
 public:
-    static constexpr uint8_t kVisibleTeamMembers = 4;
-    static constexpr uint8_t kVisibleSwitches = 3;
-
     DisplayUi();
 
     void begin();
@@ -41,11 +39,11 @@ private:
     uint32_t maxPlayers = 0;
     uint32_t queuedPlayers = 0;
     uint8_t teamMemberCount = 0;
-    bool teamMemberOnline[kVisibleTeamMembers]{};
-    bool teamMemberAlive[kVisibleTeamMembers]{};
-    bool switchActive[kVisibleSwitches]{};
+    bool teamMemberOnline[Config::kVisibleTeamMembers]{};
+    bool teamMemberAlive[Config::kVisibleTeamMembers]{};
+    bool switchActive[Config::kVisibleSwitches]{};
     char serverName[48]{};
-    char teamMemberNames[kVisibleTeamMembers][16]{};
+    char teamMemberNames[Config::kVisibleTeamMembers][16]{};
 
     void drawStaticLayout();
     void drawConnectionStatus();

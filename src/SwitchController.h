@@ -3,14 +3,13 @@
 #include <Arduino.h>
 
 #include "DisplayUi.h"
+#include "Config.h"
 
 class SwitchController {
 public:
-    static constexpr uint8_t kSwitchCount = DisplayUi::kVisibleSwitches;
-
     explicit SwitchController(DisplayUi& ui);
 
-    void begin(const uint8_t (&pins)[kSwitchCount], const uint64_t (&entityIds)[kSwitchCount]);
+    void begin(const uint8_t (&pins)[Config::kVisibleSwitches], const uint64_t (&entityIds)[Config::kVisibleSwitches]);
     int8_t poll(uint32_t now);
     void toggle(uint8_t index, bool& value);
     void setStateForEntity(uint64_t entityId, bool value);
@@ -29,7 +28,7 @@ private:
     };
 
     DisplayUi& ui;
-    Switch switches[kSwitchCount]{};
+    Switch switches[Config::kVisibleSwitches]{};
 
     void publish();
 };

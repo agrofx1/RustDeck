@@ -39,7 +39,6 @@ RustDeck::RustDeck(DisplayUi& displayUi, uint64_t playerId, int32_t playerToken,
 }
 
 void RustDeck::begin() {
-    Serial.println("[Switch] initializing physical controls");
     switches.begin(Config::kSwitchButtonPins, Config::kSwitchEntityIds);
 }
 
@@ -49,7 +48,6 @@ void RustDeck::update(bool isWifiConnected, uint32_t now) {
     if (wifiConnected != isWifiConnected) {
         wifiConnected = isWifiConnected;
         ui.setNetworkConnected(wifiConnected);
-        Serial.printf("[Switch] Wi-Fi %s\n", wifiConnected ? "connected" : "disconnected");
 
         if (wifiConnected) {
             rustPlus.begin(host, port);
@@ -68,7 +66,6 @@ void RustDeck::update(bool isWifiConnected, uint32_t now) {
     }
 
     if (pressedSwitch >= 0) {
-        Serial.printf("[Switch %d] press received while Rust+ is connected\n", pressedSwitch);
         bool value = false;
         switches.toggle(pressedSwitch, value);
         Serial.printf("[Switch %d] setEntityValue(entity=%llu, value=%s)\n", pressedSwitch,
@@ -88,7 +85,6 @@ void RustDeck::update(bool isWifiConnected, uint32_t now) {
 }
 
 void RustDeck::requestInitialData(uint32_t now) {
-    Serial.printf("[Switch] requesting initial data at %lu ms\n", static_cast<unsigned long>(now));
     rustPlus.getInfo();
     rustPlus.getTeamInfo();
     lastInfoRequest = now;
@@ -100,7 +96,6 @@ void RustDeck::handleRustPlusConnection(bool connected) {
 
     rustPlusConnected = connected;
     ui.setRustPlusConnected(connected);
-    Serial.printf("[Switch] Rust+ %s\n", connected ? "connected" : "disconnected");
     if (connected) {
         requestInitialData(millis());
     }
@@ -166,12 +161,12 @@ void RustDeck::handleTeamInfo(const AppTeamInfo&, const AppTeamInfo_Member* memb
     teamMemberCount = receivedCount;
     for (uint8_t i = 0; i < kMaxTeamMembers; ++i) teamMembers[i] = nextMembers[i];
 
-    const uint8_t visibleCount = receivedCount > DisplayUi::kVisibleTeamMembers
-                                     ? DisplayUi::kVisibleTeamMembers
+    const uint8_t visibleCount = receivedCount > Config::kVisibleTeamMembers
+                                     ? Config::kVisibleTeamMembers
                                      : receivedCount;
-    const char* visibleNames[DisplayUi::kVisibleTeamMembers]{};
-    bool visibleOnline[DisplayUi::kVisibleTeamMembers]{};
-    bool visibleAlive[DisplayUi::kVisibleTeamMembers]{};
+    const char* visibleNames[Config::kVisibleTeamMembers]{};
+    bool visibleOnline[Config::kVisibleTeamMembers]{};
+    bool visibleAlive[Config::kVisibleTeamMembers]{};
     for (uint8_t i = 0; i < visibleCount; ++i) {
         visibleNames[i] = teamMembers[i].name;
         visibleOnline[i] = teamMembers[i].online;
@@ -184,8 +179,5 @@ void RustDeck::handleEntityChanged(const AppEntityChanged& changed) {
     if (!changed.has_entity_id) return;
 
     const bool value = changed.payload.has_value && changed.payload.value;
-    Serial.printf("[Switch] entity-change entity=%llu value=%s%s\n",
-                  static_cast<unsigned long long>(changed.entity_id),
-                  value ? "true" : "false", changed.payload.has_value ? "" : " (implicit)");
     switches.setStateForEntity(changed.entity_id, value);
 }

@@ -107,7 +107,7 @@ void DisplayUi::setPopulation(uint32_t newPlayers, uint32_t newMaxPlayers, uint3
 
 void DisplayUi::setTeamMembers(const char* const* names, const bool* online, const bool* alive,
                                uint8_t count) {
-    const uint8_t newCount = count > kVisibleTeamMembers ? kVisibleTeamMembers : count;
+    const uint8_t newCount = count > Config::kVisibleTeamMembers ? Config::kVisibleTeamMembers : count;
     bool teamChanged = !hasTeamInfo || teamMemberCount != newCount;
     for (uint8_t i = 0; !teamChanged && i < newCount; ++i) {
         teamChanged = strcmp(teamMemberNames[i], names[i] ? names[i] : "") != 0 ||
@@ -117,7 +117,7 @@ void DisplayUi::setTeamMembers(const char* const* names, const bool* online, con
 
     hasTeamInfo = true;
     teamMemberCount = newCount;
-    for (uint8_t i = 0; i < kVisibleTeamMembers; ++i) {
+    for (uint8_t i = 0; i < Config::kVisibleTeamMembers; ++i) {
         if (i < newCount) {
             copyText(teamMemberNames[i], sizeof(teamMemberNames[i]), names[i]);
             teamMemberOnline[i] = online[i];
@@ -132,9 +132,9 @@ void DisplayUi::setTeamMembers(const char* const* names, const bool* online, con
 }
 
 void DisplayUi::setSwitches(const bool* active) {
-    for (uint8_t i = 0; i < kVisibleSwitches; ++i) {
+    for (uint8_t i = 0; i < Config::kVisibleSwitches; ++i) {
         if (switchActive[i] != active[i]) {
-            for (uint8_t j = 0; j < kVisibleSwitches; ++j) {
+            for (uint8_t j = 0; j < Config::kVisibleSwitches; ++j) {
                 switchActive[j] = active[j];
             }
             dirtyRegions |= kSwitches;
@@ -249,10 +249,9 @@ void DisplayUi::drawSwitches() {
     constexpr int16_t kSwitchY = 188;
     constexpr int16_t kSwitchWidth = 96;
     constexpr int16_t kSwitchHeight = 36;
-    constexpr int16_t kSwitchX[kVisibleSwitches] = {8, 110, 212};
-    constexpr const char* kSwitchLabels[kVisibleSwitches] = {"Turret", "Tesla", "Garage"};
+    constexpr int16_t kSwitchX[Config::kVisibleSwitches] = {8, 110, 212};
 
-    for (uint8_t i = 0; i < kVisibleSwitches; ++i) {
+    for (uint8_t i = 0; i < Config::kVisibleSwitches; ++i) {
         const int16_t x = kSwitchX[i];
         display.fillRect(x, kSwitchY, kSwitchWidth, kSwitchHeight, kBackground);
         display.fillRoundRect(x, kSwitchY, kSwitchWidth, kSwitchHeight, 7, kPanel);
@@ -265,8 +264,8 @@ void DisplayUi::drawSwitches() {
         }
         display.setTextColor(kTileText);
         display.setTextSize(2);
-        const int16_t labelWidth = strlen(kSwitchLabels[i]) * 12;
+        const int16_t labelWidth = strlen(Config::kSwitchLabels[i]) * 12;
         display.setCursor(x + (kSwitchWidth - labelWidth) / 2, kSwitchY + 10);
-        display.print(kSwitchLabels[i]);
+        display.print(Config::kSwitchLabels[i]);
     }
 }

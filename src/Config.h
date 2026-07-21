@@ -26,5 +26,7 @@ constexpr uint32_t kTeamRefreshMs = 20UL * 1000UL;
 
 constexpr uint8_t kSwitchButtonPins[] = {0, 0, 0};
 constexpr uint64_t kSwitchEntityIds[] = {0, 0, 0};
-
+constexpr uint8_t kVisibleTeamMembers = 4;
+constexpr uint8_t kVisibleSwitches = 3;
+constexpr const char* kSwitchLabels[kVisibleSwitches] = {"Turret", "Tesla", "Garage"};
 }
